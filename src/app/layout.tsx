@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Relta — Onchain Pay Links on BASE",
   description: "Create shareable payment links that accept USDC on BASE. Tip jars, pay links, and digital downloads.",
+  other: {
+    "base:app_id": "69d6ccf7adb751d63e3ce617",
+  },
 };
 
 export default function RootLayout({
