@@ -5,6 +5,43 @@ import { truncateAddress, formatUSDC } from '@/lib/utils';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ username: string }>;
+}): Promise<Metadata> {
+  const { username } = await params;
+  const supabase = createServiceClient();
+  const { data: creator } = await supabase
+    .from('creators')
+    .select('username')
+    .eq('username', username.toLowerCase())
+    .single();
+
+  if (!creator) return {};
+
+  const title = `@${creator.username} — Relta`;
+  const description = `Pay @${creator.username} in USDC on BASE. Tip jars, pay links, and digital downloads.`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: `https://www.relta.xyz/${creator.username}`,
+      images: [{ url: '/og.png' }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: ['/og.png'],
+    },
+  };
+}
 
 export default async function CreatorProfilePage({
   params,
