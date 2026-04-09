@@ -39,13 +39,11 @@ export async function generateMetadata({
       title,
       description,
       url: `https://www.relta.xyz/${creator.username}/${slug}`,
-      images: [{ url: '/og.png' }],
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: ['/og.png'],
     },
   };
 }
@@ -81,6 +79,15 @@ export default async function PayPage({
     .select('*', { count: 'exact', head: true })
     .eq('link_id', link.id);
 
+  // Get other links by this creator for upsell
+  const { data: otherLinks } = await supabase
+    .from('links')
+    .select('title, slug, type, price')
+    .eq('creator_id', creator.id)
+    .neq('id', link.id)
+    .order('created_at', { ascending: false })
+    .limit(3);
+
   return (
     <PayPageClient
       link={{
@@ -96,6 +103,12 @@ export default async function PayPage({
         wallet_address: creator.wallet_address,
       }}
       paymentCount={count || 0}
+      otherLinks={(otherLinks || []).map(l => ({
+        title: l.title,
+        slug: l.slug,
+        type: l.type as 'tip' | 'pay' | 'download',
+        price: l.price,
+      }))}
     />
   );
 }

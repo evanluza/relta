@@ -7,6 +7,7 @@ interface Creator {
   id: string;
   wallet_address: string;
   username: string;
+  bio: string | null;
   created_at: string;
 }
 
@@ -56,6 +57,7 @@ export function useCreator() {
       id: '',
       wallet_address: address!,
       username,
+      bio: null,
       created_at: new Date().toISOString(),
     });
     setNeedsUsername(false);

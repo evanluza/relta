@@ -12,6 +12,13 @@ import { formatUSDC } from '@/lib/utils';
 import { useAccount } from 'wagmi';
 import Link from 'next/link';
 
+interface OtherLink {
+  title: string;
+  slug: string;
+  type: 'tip' | 'pay' | 'download';
+  price: number | null;
+}
+
 interface PayPageClientProps {
   link: {
     id: string;
@@ -26,9 +33,10 @@ interface PayPageClientProps {
     wallet_address: string;
   };
   paymentCount: number;
+  otherLinks: OtherLink[];
 }
 
-export function PayPageClient({ link, creator, paymentCount }: PayPageClientProps) {
+export function PayPageClient({ link, creator, paymentCount, otherLinks }: PayPageClientProps) {
   const { isConnected } = useAccount();
   const [tipAmount, setTipAmount] = useState<number>(5);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
@@ -88,8 +96,32 @@ export function PayPageClient({ link, creator, paymentCount }: PayPageClientProp
                 </a>
               )}
 
+              {/* More from creator */}
+              {otherLinks.length > 0 && (
+                <div className="border-t border-card-border pt-5 mt-2 mb-4">
+                  <p className="text-sm text-muted mb-3">More from @{creator.username}</p>
+                  <div className="flex flex-col gap-2">
+                    {otherLinks.map((ol) => (
+                      <Link
+                        key={ol.slug}
+                        href={`/${creator.username}/${ol.slug}`}
+                        className="flex items-center justify-between p-3 rounded-lg border border-card-border hover:border-primary/30 transition-colors"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Badge type={ol.type} />
+                          <span className="text-sm font-medium">{ol.title}</span>
+                        </div>
+                        <span className="text-sm text-muted">
+                          {ol.type === 'tip' ? 'Any amount' : formatUSDC(ol.price!)}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Share prompt */}
-              <div className="border-t border-card-border pt-6 mt-2">
+              <div className="border-t border-card-border pt-5">
                 <p className="text-sm text-muted mb-3">Spread the word</p>
                 <div className="flex gap-3">
                   <Button onClick={shareOnX} className="flex-1">
@@ -156,6 +188,11 @@ export function PayPageClient({ link, creator, paymentCount }: PayPageClientProp
             </>
           )}
         </Card>
+        <p className="text-center text-sm text-muted/40 mt-6">
+          <a href="https://www.relta.xyz" className="hover:text-muted transition-colors">
+            Powered by Relta — create your own pay link
+          </a>
+        </p>
       </main>
     </div>
   );

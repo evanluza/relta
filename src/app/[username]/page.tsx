@@ -73,7 +73,10 @@ export default async function CreatorProfilePage({
       <main className="max-w-2xl mx-auto px-4 py-12">
         <div className="text-center mb-10">
           <h1 className="text-3xl font-bold mb-2">@{creator.username}</h1>
-          <p className="text-muted font-mono text-sm">{truncateAddress(creator.wallet_address)}</p>
+          {creator.bio && (
+            <p className="text-muted mb-2 max-w-md mx-auto">{creator.bio}</p>
+          )}
+          <p className="text-muted/50 font-mono text-sm">{truncateAddress(creator.wallet_address)}</p>
         </div>
 
         {(!links || links.length === 0) ? (
@@ -102,6 +105,11 @@ export default async function CreatorProfilePage({
             ))}
           </div>
         )}
+        <p className="text-center text-sm text-muted/40 mt-12">
+          <a href="https://www.relta.xyz" className="hover:text-muted transition-colors">
+            Powered by Relta — create your own pay link
+          </a>
+        </p>
       </main>
     </div>
   );

@@ -11,6 +11,7 @@ import { LinkCard } from '@/components/dashboard/LinkCard';
 import { TransactionList } from '@/components/dashboard/TransactionList';
 import { useCreator } from '@/hooks/useCreator';
 import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 import Link from 'next/link';
 
 interface LinkData {
@@ -39,6 +40,9 @@ export default function DashboardPage() {
   const [links, setLinks] = useState<LinkData[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
+  const [bio, setBio] = useState('');
+  const [editingBio, setEditingBio] = useState(false);
+  const [savingBio, setSavingBio] = useState(false);
 
   useEffect(() => {
     if (!address) return;
@@ -69,6 +73,28 @@ export default function DashboardPage() {
     }
   }
 
+  useEffect(() => {
+    if (creator?.bio !== undefined) {
+      setBio(creator.bio || '');
+    }
+  }, [creator]);
+
+  async function handleSaveBio() {
+    setSavingBio(true);
+    try {
+      await fetch('/api/creators/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ walletAddress: address, bio }),
+      });
+      setEditingBio(false);
+    } catch {
+      // silently fail
+    } finally {
+      setSavingBio(false);
+    }
+  }
+
   const totalEarnings = links.reduce((sum, l) => sum + l.earnings, 0);
   const totalTransactions = links.reduce((sum, l) => sum + l.transaction_count, 0);
 
@@ -94,6 +120,46 @@ export default function DashboardPage() {
             </div>
           ) : (
             <>
+              {/* Profile card */}
+              <Card>
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-1">
+                      <h2 className="text-lg font-bold">@{creator?.username}</h2>
+                      <a
+                        href={`/${creator?.username}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-primary hover:text-primary-hover"
+                      >
+                        View profile
+                      </a>
+                    </div>
+                    {editingBio ? (
+                      <div className="flex items-center gap-2 mt-2">
+                        <input
+                          className="flex-1 px-3 py-1.5 rounded-lg bg-background border border-card-border text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                          placeholder="Add a short bio (160 chars)"
+                          maxLength={160}
+                          value={bio}
+                          onChange={(e) => setBio(e.target.value)}
+                          autoFocus
+                        />
+                        <Button onClick={handleSaveBio} loading={savingBio} className="text-xs">Save</Button>
+                        <Button variant="ghost" onClick={() => setEditingBio(false)} className="text-xs">Cancel</Button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm text-muted">{bio || 'No bio yet'}</p>
+                        <button onClick={() => setEditingBio(true)} className="text-xs text-primary hover:text-primary-hover">
+                          {bio ? 'Edit' : 'Add bio'}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </Card>
+
               <EarningsOverview
                 totalEarnings={totalEarnings}
                 totalTransactions={totalTransactions}
