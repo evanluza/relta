@@ -77,7 +77,8 @@ export function PayPageClient({ link, creator, paymentCount, otherLinks }: PayPa
         <ConnectButton />
       </nav>
       <main className="flex-1 flex items-center justify-center px-4 py-12">
-        <Card className="w-full max-w-md">
+        <div className="w-full max-w-md">
+        <Card>
           {paymentSuccess ? (
             <div className="text-center py-4">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-success/10 flex items-center justify-center">
@@ -188,11 +189,12 @@ export function PayPageClient({ link, creator, paymentCount, otherLinks }: PayPa
             </>
           )}
         </Card>
-        <p className="text-center text-sm text-muted/40 mt-6">
+        <p className="text-center text-sm text-muted/40 mt-4">
           <a href="https://www.relta.xyz" className="hover:text-muted transition-colors">
             Powered by Relta — create your own pay link
           </a>
         </p>
+        </div>
       </main>
     </div>
   );
