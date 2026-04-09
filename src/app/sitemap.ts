@@ -1,6 +1,8 @@
 import { MetadataRoute } from 'next';
 import { createServiceClient } from '@/lib/supabase/server';
 
+export const dynamic = 'force-dynamic';
+
 const siteUrl = 'https://www.relta.xyz';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
