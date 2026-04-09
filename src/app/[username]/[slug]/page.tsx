@@ -75,6 +75,12 @@ export default async function PayPage({
 
   if (!link) notFound();
 
+  // Get payment count for social proof
+  const { count } = await supabase
+    .from('transactions')
+    .select('*', { count: 'exact', head: true })
+    .eq('link_id', link.id);
+
   return (
     <PayPageClient
       link={{
@@ -89,6 +95,7 @@ export default async function PayPage({
         username: creator.username,
         wallet_address: creator.wallet_address,
       }}
+      paymentCount={count || 0}
     />
   );
 }
