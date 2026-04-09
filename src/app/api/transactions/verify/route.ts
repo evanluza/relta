@@ -104,7 +104,7 @@ export async function POST(req: NextRequest) {
     let downloadUrl: string | undefined;
     if (link.type === 'download' && link.file_url) {
       const { data: signedUrl } = await supabase.storage
-        .from('downloads')
+        .from('Downloads')
         .createSignedUrl(link.file_url, 3600);
 
       if (signedUrl) {

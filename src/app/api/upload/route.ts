@@ -31,13 +31,14 @@ export async function POST(req: NextRequest) {
   const buffer = Buffer.from(await file.arrayBuffer());
 
   const { error } = await supabase.storage
-    .from('downloads')
+    .from('Downloads')
     .upload(filePath, buffer, {
       contentType: file.type,
     });
 
   if (error) {
-    return NextResponse.json({ error: 'Failed to upload file' }, { status: 500 });
+    console.error('Upload error:', error);
+    return NextResponse.json({ error: 'Failed to upload file', detail: error.message }, { status: 500 });
   }
 
   return NextResponse.json({ file_url: filePath });
